@@ -65,6 +65,7 @@ void MainWindow::set_themes_table()
 
 void MainWindow::get_remote_plugins_info()
 {
+    m_remote_plugins.clear();
     QNetworkReply *response = m_network_manager.get(QNetworkRequest(QUrl("https://raw.githubusercontent.com/rxi/lite-plugins/master/README.md")));
     QEventLoop event;
     connect(response, SIGNAL(finished()), &event, SLOT(quit()));
@@ -96,6 +97,7 @@ void MainWindow::get_remote_plugins_info()
 
 void MainWindow::get_remote_themes_info()
 {
+    m_remote_themes.clear();
     QNetworkReply *response = m_network_manager.get(QNetworkRequest(QUrl("https://raw.githubusercontent.com/rxi/lite-colors/master/README.md")));
     QEventLoop event;
     connect(response, SIGNAL(finished()), &event, SLOT(quit()));
@@ -153,14 +155,21 @@ MainWindow::MainWindow(QWidget *parent)
     m_main_widget_wgt->setLayout(m_main_layout_gl);
     setCentralWidget(m_main_widget_wgt);
 
-    connect(m_stuff_type_cb, SIGNAL(currentIndexChanged(int)), this,SLOT(update_tables(int)));
+    connect(m_stuff_type_cb, SIGNAL(currentIndexChanged(int)), this,SLOT(update_tables()));
     m_data_dir_path = QFileDialog::getExistingDirectory(0, "Lite data dir path", "/");
 
     slash = QSysInfo::productType() == "windows" ? "\\" : "/";
 
     get_remote_plugins_info();
     get_remote_themes_info();
-    update_tables(0);
+    update_tables();
+
+    m_set_path = new QAction("Set data dir", this);
+    m_refresh = new QAction("Refresh", this);
+    menuBar()->addAction(m_set_path);
+    menuBar()->addAction(m_refresh);
+    connect(m_set_path, SIGNAL(triggered(bool)), this, SLOT(set_path()));
+    connect(m_set_path, SIGNAL(triggered(bool)), this, SLOT(update_tables()));
 
     connect(m_remove_pb, SIGNAL(clicked()), this, SLOT(remove_local_stuff()));
     connect(m_add_stuff_pb, SIGNAL(clicked()), this, SLOT(add_stuff()));
@@ -173,8 +182,9 @@ MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::update_tables(int type_index)
+void MainWindow::update_tables()
 {
+    int type_index(m_stuff_type_cb->currentIndex());
     m_remote_stuff_tw->clear();
     m_local_stuff_tw->clear();
     if(type_index == 0)
@@ -216,7 +226,7 @@ void MainWindow::remove_local_stuff()
             }
         }
     }
-    update_tables(type_ind);
+    update_tables();
 }
 
 void MainWindow::add_stuff()
@@ -272,14 +282,16 @@ void MainWindow::add_stuff()
         stuff.write(data.toUtf8());
         stuff.close();
     }
-    update_tables(type_ind);
+    update_tables();
 }
 
 void MainWindow::use_remote_filter(const QString &text)
 {
+    for(int i = 0; i < m_remote_stuff_tw->rowCount(); ++i)
+        m_remote_stuff_tw->setRowHidden(i, 0);
     if(text == "")
     {
-        update_tables(m_stuff_type_cb->currentIndex());
+        update_tables();
         return;
     }
     for(int i = 0; i < m_remote_stuff_tw->rowCount(); ++i)
@@ -297,11 +309,13 @@ void MainWindow::use_remote_filter(const QString &text)
 
 void MainWindow::use_local_filter(const QString &text)
 {
+    for(int i = 0; i < m_local_stuff_tw->rowCount(); ++i)
+        m_local_stuff_tw->setRowHidden(i, 0);
     if(text == "")
     {
-        update_tables(m_stuff_type_cb->currentIndex());
+        update_tables();
         return;
-    }
+    }    
     for(int i = 0; i < m_local_stuff_tw->rowCount(); ++i)
     {
         bool exist = true;
@@ -371,5 +385,11 @@ void MainWindow::reinstall_all_local_stuff()
         stuff.write(data.toUtf8());
         stuff.close();
     }
-    update_tables(type_ind);
+    update_tables();
+}
+
+void MainWindow::set_path()
+{
+    m_data_dir_path = QFileDialog::getExistingDirectory(0, "Lite data dir path", "/");
+    update_tables();
 }

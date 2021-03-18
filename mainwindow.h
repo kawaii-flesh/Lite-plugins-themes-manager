@@ -26,6 +26,8 @@ private:
     QPushButton *m_remove_pb;
     QLineEdit *m_remote_filter_le;
     QLineEdit *m_local_filter_le;
+    QAction *m_set_path;
+    QAction *m_refresh;
 
     QMap<QString, QString> m_remote_plugins;
     QStringList m_remote_themes;
@@ -40,11 +42,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private slots:
-    void update_tables(int type_index);
+    void update_tables();
     void remove_local_stuff();
     void add_stuff();
     void use_remote_filter(const QString &);
     void use_local_filter(const QString &);
     void reinstall_all_local_stuff();
+    void set_path();
 };
 #endif // MAINWINDOW_H
