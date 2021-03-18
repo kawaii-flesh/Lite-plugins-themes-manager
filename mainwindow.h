@@ -43,6 +43,7 @@ public:
     ~MainWindow();
 private slots:
     void update_tables();
+    void refresh();
     void remove_local_stuff();
     void add_stuff();
     void use_remote_filter(const QString &);

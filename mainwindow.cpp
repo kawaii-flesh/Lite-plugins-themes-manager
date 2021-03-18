@@ -169,7 +169,7 @@ MainWindow::MainWindow(QWidget *parent)
     menuBar()->addAction(m_set_path);
     menuBar()->addAction(m_refresh);
     connect(m_set_path, SIGNAL(triggered(bool)), this, SLOT(set_path()));
-    connect(m_set_path, SIGNAL(triggered(bool)), this, SLOT(update_tables()));
+    connect(m_refresh, SIGNAL(triggered(bool)), this, SLOT(refresh()));
 
     connect(m_remove_pb, SIGNAL(clicked()), this, SLOT(remove_local_stuff()));
     connect(m_add_stuff_pb, SIGNAL(clicked()), this, SLOT(add_stuff()));
@@ -191,6 +191,13 @@ void MainWindow::update_tables()
         set_plugins_table();
     else if(type_index == 1)
         set_themes_table();
+}
+
+void MainWindow::refresh()
+{
+    get_remote_plugins_info();
+    get_remote_themes_info();
+    update_tables();
 }
 
 void MainWindow::remove_local_stuff()
@@ -390,6 +397,6 @@ void MainWindow::reinstall_all_local_stuff()
 
 void MainWindow::set_path()
 {
-    m_data_dir_path = QFileDialog::getExistingDirectory(0, "Lite data dir path", "/");
+    m_data_dir_path = QFileDialog::getExistingDirectory(0, "Lite data dir path", m_data_dir_path);
     update_tables();
 }
