@@ -77,7 +77,7 @@ void MainWindow::get_remote_plugins_info()
     while(pos != -1)
     {
         int start_name_ind = pos + 2;
-        int end_name_ind = html.indexOf("`]", start_name_ind);
+        int end_name_ind = html.indexOf("`]", start_name_ind);        
         int start_disc_ind = html.indexOf("| ", start_name_ind) + 2;
         int end_disc_ind = html.indexOf("\n", start_disc_ind);
         QString name = html.mid(start_name_ind, end_name_ind - start_name_ind);
@@ -86,6 +86,9 @@ void MainWindow::get_remote_plugins_info()
                 remove(QRegularExpression("\\*.*\\*")).
                 remove('`').remove('[').remove(']').
                 remove(QRegularExpression("\\(https.*\\)"));
+        QString for_test_aster = html.mid(end_name_ind, start_disc_ind - end_name_ind);
+        if(for_test_aster.contains('*'))
+            name = name + '*';
         m_remote_plugins.insert(name, descr);
         pos = html.indexOf("[`", end_disc_ind);
     }
@@ -249,6 +252,11 @@ void MainWindow::add_stuff()
     msg.show();
     for(const QString &s : stuffs)
     {
+        if(s.contains('*'))
+        {
+            QMessageBox::warning(0, "Add", s + " extension requires manual installation");
+            continue;
+        }
         QNetworkReply *response = m_network_manager.get(QNetworkRequest(QUrl(url + s + ".lua")));
         QEventLoop event;
         connect(response, SIGNAL(finished()), &event, SLOT(quit()));
