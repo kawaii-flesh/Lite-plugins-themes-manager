@@ -83,9 +83,9 @@ void MainWindow::get_remote_plugins_info()
         QString name = html.mid(start_name_ind, end_name_ind - start_name_ind);
         QString descr = html.mid(start_disc_ind, end_disc_ind - start_disc_ind);
         descr = descr.
-                remove(QRegExp("\\*.*\\*")).
+                remove(QRegularExpression("\\*.*\\*")).
                 remove('`').remove('[').remove(']').
-                remove(QRegExp("\\(https.*\\)"));
+                remove(QRegularExpression("\\(https.*\\)"));
         m_remote_plugins.insert(name, descr);
         pos = html.indexOf("[`", end_disc_ind);
     }
@@ -98,7 +98,7 @@ void MainWindow::get_remote_themes_info()
     connect(response, SIGNAL(finished()), &event, SLOT(quit()));
     event.exec();
     QString html = response->readAll();
-    html = html.remove(QRegExp("\\*.*\\*"));
+    html = html.remove(QRegularExpression("\\*.*\\*"));
 
     QStringList names_list;
 

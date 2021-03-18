@@ -6,7 +6,7 @@
 #include <QDir>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QSysInfo>
 
 class MainWindow : public QMainWindow
