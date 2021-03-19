@@ -84,9 +84,9 @@ void MainWindow::get_remote_plugins_info()
         QString name = html.mid(start_name_ind, end_name_ind - start_name_ind);
         QString descr = html.mid(start_disc_ind, end_disc_ind - start_disc_ind);
         descr = descr.
-                remove(QRegularExpression("\\*.*\\*")).
+                remove(QRegularExpression("\\*.*\\*", QRegularExpression::DotMatchesEverythingOption)).
                 remove('`').remove('[').remove(']').
-                remove(QRegularExpression("\\(https.*\\)"));
+                remove(QRegularExpression("\\(https.*\\)", QRegularExpression::DotMatchesEverythingOption));
         QString for_test_aster = html.mid(end_name_ind, start_disc_ind - end_name_ind);
         if(for_test_aster.contains('*'))
             name = name + '*';
@@ -103,7 +103,7 @@ void MainWindow::get_remote_themes_info()
     connect(response, SIGNAL(finished()), &event, SLOT(quit()));
     event.exec();
     QString html = response->readAll();
-    html = html.remove(QRegularExpression("\\*.*\\*"));
+    html = html.remove(QRegularExpression("\\*.*\\*", QRegularExpression::DotMatchesEverythingOption));
 
     QStringList names_list;
 
