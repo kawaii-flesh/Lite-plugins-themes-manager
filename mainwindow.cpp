@@ -135,6 +135,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_remote_filter_le = new QLineEdit(this);
     m_local_filter_le = new QLineEdit(this);
 
+    m_remote_filter_le->setPlaceholderText("Filter");
+    m_local_filter_le->setPlaceholderText("Filter");
+
     m_main_layout_gl->addWidget(m_remote_filter_le, 0, 0);
     m_main_layout_gl->addWidget(m_local_filter_le, 0, 2);
     m_main_layout_gl->addWidget(m_stuff_type_cb, 0, 1);
